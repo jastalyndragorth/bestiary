@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17130f">
+<title>The Bestiary — Men of Letters Archive</title>
+<style>
+:root {
+  --ink:#261f18; --muted:#6b5945; --paper:#e8d6b1; --paper2:#dbc294;
+  --line:#7f674b; --red:#781e18; --dark:#17130f; --cream:#f3e6ca;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;color:var(--ink);font-family:Georgia,"Times New Roman",serif;
+  background:#211b16;
+}
+button,input,select,textarea{font:inherit}
+.app{
+  max-width:1200px;margin:auto;min-height:100vh;background:
+  radial-gradient(circle at 12% 9%,rgba(255,255,255,.18),transparent 25%),
+  linear-gradient(rgba(103,76,40,.05),rgba(103,76,40,.05)),
+  var(--paper); box-shadow:0 0 55px #000a;
+}
+.topbar{
+  position:sticky;top:0;z-index:10;background:#17130ff2;color:#ead8b5;
+  border-bottom:1px solid #594630;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:10px 18px;
+}
+.brand-small{letter-spacing:.18em;text-transform:uppercase;font-size:.78rem}
+.top-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{background:transparent;color:#ead8b5;border:1px solid #6d5840;padding:8px 10px;cursor:pointer}
+.hero{
+  text-align:center;padding:46px 22px 28px;border-bottom:3px double var(--line);
+  background:linear-gradient(#ead8b5,#dfc79b);
+}
+.hero .kicker{font-size:.75rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.hero h1{margin:.28rem 0 .2rem;font-size:clamp(2.8rem,8vw,5.7rem);letter-spacing:.07em}
+.hero p{margin:.3rem auto 0;max-width:700px;color:var(--muted);font-style:italic;line-height:1.55}
+.controls{padding:20px;border-bottom:1px solid var(--line)}
+.search-row{display:grid;grid-template-columns:1fr auto;gap:10px;max-width:850px;margin:auto}
+.search-row input{width:100%;padding:14px 16px;border:1px solid var(--line);background:var(--cream);outline:none}
+.primary{border:1px solid #4f3f2e;background:var(--dark);color:var(--cream);padding:12px 18px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em;font-weight:bold}
+.filters{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin-top:14px}
+.filters select,.filters button{padding:9px 12px;border:1px solid var(--line);background:#f1e3c7;color:var(--ink)}
+.alpha{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:16px 18px;border-bottom:1px solid var(--line)}
+.alpha button{width:34px;height:34px;border:1px solid #8d7354;background:#ead8b5;cursor:pointer}
+.alpha button.active{background:var(--dark);color:var(--cream)}
+main{padding:20px}
+.summary{display:flex;justify-content:space-between;gap:14px;align-items:center;color:var(--muted);margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:15px}
+.card{
+  position:relative;padding:18px;background:#f4e7cc99;border:1px solid var(--line);
+  min-height:155px;box-shadow:inset 0 0 20px #8d70451c;cursor:pointer;
+}
+.card:after{content:"";position:absolute;inset:6px;border:1px solid #8d70452f;pointer-events:none}
+.card h2{font-size:1.28rem;margin:0 32px 7px 0}
+.type{font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;color:var(--red);font-weight:bold}
+.card p{font-size:.91rem;line-height:1.42;color:#5c4936;margin:9px 0 0}
+.star{
+  position:absolute;right:12px;top:10px;z-index:2;background:transparent;border:0;font-size:1.35rem;
+  cursor:pointer;color:#7b674f;
+}
+.star.on{color:#7a1f18}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-style:italic}
+footer{padding:20px;text-align:center;border-top:1px solid var(--line);color:var(--muted);font-size:.84rem}
+dialog{
+  width:min(780px,94vw);max-height:90vh;border:1px solid #594630;padding:0;background:var(--paper);
+  color:var(--ink);box-shadow:0 28px 90px #000c;
+}
+dialog::backdrop{background:#000c}
+.entry-head{position:relative;padding:28px;border-bottom:3px double var(--line);background:#e4cca2}
+.entry-head h2{margin:3px 42px 5px 0;font-size:2.2rem}
+.close{position:absolute;right:14px;top:11px;background:transparent;border:0;font-size:1.6rem;cursor:pointer}
+.entry-body{padding:24px 28px 30px;line-height:1.6}
+.entry-body h3{margin:20px 0 5px;text-transform:uppercase;letter-spacing:.11em;font-size:.92rem;color:var(--red)}
+.entry-body p{margin:0}
+.entry-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+.seal{border:1px solid var(--line);padding:4px 8px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+.note-box{margin-top:18px;padding-top:17px;border-top:1px dashed var(--line)}
+.note-box textarea{width:100%;min-height:110px;padding:12px;border:1px solid var(--line);background:#f3e6ca;resize:vertical}
+.note-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+.secondary{background:#ead8b5;border:1px solid var(--line);padding:9px 12px;cursor:pointer}
+.case-badge{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:7px 10px;border:1px solid var(--line);background:#f1e2c2}
+.panel{
+  position:fixed;right:0;top:0;bottom:0;width:min(420px,92vw);background:#1c1712;color:#ead8b5;
+  z-index:30;transform:translateX(105%);transition:.25s ease;box-shadow:-20px 0 50px #0008;padding:22px;overflow:auto;
+}
+.panel.open{transform:translateX(0)}
+.panel h2{margin-top:8px}
+.panel .fav-item{padding:12px 0;border-bottom:1px solid #5b4936;cursor:pointer}
+.panel .muted{color:#bba98a}
+
+.card-image{
+  width:100%;aspect-ratio:4/3;object-fit:cover;object-position:top center;
+  border:1px solid var(--line);margin:0 0 13px;background:#d9c39b;
+  filter:grayscale(100%) contrast(1.03);box-shadow:0 3px 9px #46351f2b;
+}
+.entry-layout{display:grid;grid-template-columns:minmax(240px,42%) 1fr;gap:24px;align-items:start}
+.entry-art-wrap{position:sticky;top:0}
+.entry-art{
+  width:100%;display:block;border:1px solid var(--line);background:#d9c39b;
+  box-shadow:0 5px 18px #46351f30;filter:grayscale(100%) contrast(1.03);
+}
+.art-caption{font-size:.76rem;color:var(--muted);font-style:italic;text-align:center;margin-top:7px}
+.expand-art{
+  width:100%;margin-top:8px;background:#ead8b5;border:1px solid var(--line);
+  padding:9px 12px;cursor:pointer;text-transform:uppercase;letter-spacing:.06em;font-size:.78rem
+}
+#artViewer{width:min(900px,96vw);max-height:94vh;background:#15110d;border:1px solid #6c5740;padding:0}
+#artViewer::backdrop{background:#000e}
+#artViewer img{display:block;max-width:100%;max-height:88vh;margin:auto}
+.viewer-close{
+  position:absolute;right:9px;top:7px;z-index:3;border:1px solid #897054;
+  background:#17130fe8;color:#f3e6ca;font-size:1.3rem;padding:5px 10px;cursor:pointer
+}
+@media(max-width:720px){
+  .entry-layout{grid-template-columns:1fr}
+  .entry-art-wrap{position:static}
+  .entry-art{max-height:58vh;object-fit:contain}
+}
+
+@media(max-width:650px){
+  .search-row{grid-template-columns:1fr}
+  .primary{width:100%}
+  .summary{align-items:flex-start;flex-direction:column}
+  main{padding:15px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand-small">Men of Letters • Digital Archive</div>
+    <div class="top-actions">
+      <button class="icon-btn" id="favPanelBtn">★ Favorites</button>
+      <button class="icon-btn" id="randomBtn">Random Entry</button>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div class="kicker">Restricted Field Reference</div>
+    <h1>THE BESTIARY</h1>
+    <p>Search the illustrated archive, open full field dossiers, mark favorites, and keep your own hunter notes directly in the browser.</p>
+  </header>
+
+  <section class="controls">
+    <div class="search-row">
+      <input id="search" type="search" placeholder="Search creature, type, lore, signs, weakness...">
+      <button id="searchBtn" class="primary">Search Archive</button>
+    </div>
+    <div class="filters">
+      <select id="typeFilter">
+        <option value="">All creature types</option>
+        <option value="Ancient Monster">Ancient Monster</option><option value="Construct">Construct</option><option value="Demonic Being">Demonic Being</option><option value="Faerie / Shapeshifter">Faerie / Shapeshifter</option><option value="Folkloric Being">Folkloric Being</option><option value="Forest Spirit">Forest Spirit</option><option value="Ghost / Legend">Ghost / Legend</option><option value="Historical Spirit / Legend">Historical Spirit / Legend</option><option value="Hybrid Monster">Hybrid Monster</option><option value="Monster">Monster</option><option value="Mythic Being">Mythic Being</option><option value="Mythic Creature">Mythic Creature</option><option value="Norse Deities">Norse Deities</option><option value="Primordial Monster">Primordial Monster</option><option value="Restless Spirit">Restless Spirit</option><option value="Shapeshifter">Shapeshifter</option><option value="Spirit / Undead">Spirit / Undead</option><option value="Spirit Phenomenon">Spirit Phenomenon</option><option value="Supernatural Being">Supernatural Being</option><option value="Thoughtform">Thoughtform</option><option value="Undead">Undead</option><option value="Undead / Monster">Undead / Monster</option><option value="Vengeful Spirit">Vengeful Spirit</option><option value="Water Spirit">Water Spirit</option><option value="Werecreature">Werecreature</option><option value="Witch / Monster">Witch / Monster</option>
+      </select>
+      <button id="favoritesOnly">Show Favorites Only</button>
+      <button id="clearFilters">Clear Filters</button>
+    </div>
+  </section>
+
+  <nav class="alpha" id="alphaNav" aria-label="Alphabetical Bestiary navigation"></nav>
+
+  <main>
+    <div class="summary">
+      <div id="count"></div>
+      <div id="activeFilterLabel"></div>
+    </div>
+    <section id="grid" class="grid"></section>
+    <div id="empty" class="empty" hidden>No matching entry was found in the archive.</div>
+  </main>
+
+  <footer>Men of Letters Bestiary • Illustrated Web Edition • Notes & favorites are stored only in this browser.</footer>
+</div>
+
+<aside class="panel" id="favPanel">
+  <button class="icon-btn" id="closePanel">Close</button>
+  <h2>Favorite Entries</h2>
+  <p class="muted">Your starred creatures appear here for quick access.</p>
+  <div id="favList"></div>
+</aside>
+
+<dialog id="entryDialog">
+  <div class="entry-head">
+    <button class="close" id="closeBtn" aria-label="Close">×</button>
+    <div class="brand-small" style="color:#6b5945">Bestiary Entry</div>
+    <h2 id="entryName"></h2>
+    <div class="entry-meta">
+      <div id="entryType" class="seal"></div>
+      <button id="modalFavorite" class="secondary">☆ Add to Favorites</button>
+    </div>
+  </div>
+  <div class="entry-body">
+    <div class="entry-layout">
+      <div class="entry-art-wrap">
+        <img id="entryArt" class="entry-art" alt="">
+        <div class="art-caption">Illustrated field dossier • Men of Letters archive</div>
+        <button id="expandArt" class="expand-art">View Full Dossier</button>
+      </div>
+      <div>
+        <h3 style="margin-top:0">Lore</h3><p id="entryLore"></p>
+        <h3>Weaknesses / Countermeasures</h3><p id="entryWeakness"></p>
+        <h3>Signs & Evidence</h3><p id="entrySigns"></p>
+        <h3>Archive Notes</h3><p id="entryNotes"></p>
+
+        <div class="case-badge">CASE FILE STATUS: Research entry available</div>
+
+        <div class="note-box">
+          <h3>My Hunter Notes</h3>
+          <textarea id="personalNotes" placeholder="Add observations, episode references, case ideas, craft notes, or anything else you want to remember..."></textarea>
+          <div class="note-actions">
+            <button class="secondary" id="clearNote">Clear Note</button>
+            <button class="primary" id="saveNote">Save Note</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+
+<dialog id="artViewer">
+  <button class="viewer-close" id="closeArtViewer" aria-label="Close">×</button>
+  <img id="viewerImage" alt="Full illustrated Bestiary dossier">
+</dialog>
+
+<script>
+const imageMap = {"Arachne": "assets/arachne.png", "Changeling": "assets/changeling.png", "Crocotta": "assets/crocotta.png", "Djinn": "assets/djinn.png", "Dragon": "assets/dragon.png", "Draugr": "assets/draugr.png", "Eve — Mother of All": "assets/eve-mother-of-all.png", "Golem": "assets/golem.png", "Hook Man": "assets/hook-man.png", "Jefferson Starship": "assets/jefferson-starship.png", "Kitsune": "assets/kitsune.png", "Lamia": "assets/lamia.png", "Leszy": "assets/leszy.png", "Leviathan": "assets/leviathan.png", "Loup-Garou": "assets/loup-garou.png", "Lycanthrope": "assets/lycanthrope.png", "Mary Tudor": "assets/mary-tudor.png", "Myling": "assets/myling.png", "Phoenix": "assets/phoenix.png", "Poltergeist": "assets/poltergeist.png", "Púca": "assets/p-ca.png", "Rakshasa": "assets/rakshasa.png", "Revenant / Ghoul": "assets/revenant-ghoul.png", "Rugaru": "assets/rugaru.png", "Selkie": "assets/selkie.png", "Shapeshifter": "assets/shapeshifter.png", "Shtriga": "assets/shtriga.png", "Siren": "assets/siren.png", "Tulpa": "assets/tulpa.png", "Vampire": "assets/vampire.png", "Vanir": "assets/vanir.png", "Vetala": "assets/vetala.png", "Vodyanoy": "assets/vodyanoy.png", "Wendigo": "assets/wendigo.png", "Woman in White": "assets/woman-in-white.png", "Wraith": "assets/wraith.png"};
+const creatures = [{"name": "Arachne", "type": "Monster", "lore": "Spider-like predator associated with webs, ambush tactics, and transformed victims.", "weakness": "Fire, separation from its nest, and careful containment.", "signs": "Webbing, missing persons, unusual bite-like wounds.", "notes": "Do not enter a nest alone."}, {"name": "Changeling", "type": "Monster", "lore": "A creature that replaces or imitates a human child while feeding on a family.", "weakness": "Identify behavioral changes and isolate the creature from its host environment.", "signs": "Sudden personality changes, strange feeding patterns, unexplained illness.", "notes": "Confirm identity before acting."}, {"name": "Crocotta", "type": "Monster", "lore": "A mimic that imitates familiar voices to lure victims into danger.", "weakness": "Break the lure, verify voices through direct contact, and avoid isolated pursuit.", "signs": "Impossible phone calls, copied voices, victims drawn away from safety.", "notes": "Never trust a voice you cannot verify."}, {"name": "Djinn", "type": "Supernatural Being", "lore": "A powerful being tied to altered perception, dreams, and false realities.", "weakness": "Interrupt its control quickly; allies should watch for sudden unconsciousness or disorientation.", "signs": "Missing time, vivid alternate realities, unexplained collapse.", "notes": "Reality checks are essential."}, {"name": "Dragon", "type": "Monster", "lore": "A rare predatory creature often associated with heat, strength, and guarded territory.", "weakness": "Ancient lore, specialized weapons, and avoiding direct confrontation.", "signs": "Scorched sites, missing people, unusual claw marks.", "notes": "Research before engagement."}, {"name": "Draugr", "type": "Undead", "lore": "A restless dead being from Norse tradition, known for guarding places, bodies, or treasures.", "weakness": "Traditional rites, fire, and preventing the dead from returning.", "signs": "Disturbed graves, oppressive presence, repeated hauntings.", "notes": "Treat the burial site as active evidence."}, {"name": "Eve — Mother of All", "type": "Primordial Monster", "lore": "A legendary progenitor figure associated with monstrous bloodlines and mutation.", "weakness": "Rare lore and exceptional caution; ordinary tactics may fail.", "signs": "Multiple creature types appearing together, unusual transformations.", "notes": "Assume standard rules do not apply."}, {"name": "Golem", "type": "Construct", "lore": "An artificial guardian formed from earth or clay and animated by sacred or mystical means.", "weakness": "Find the command source, maker's mark, or binding instructions.", "signs": "Extreme strength, literal obedience, protective behavior.", "notes": "Control is often more important than combat."}, {"name": "Hook Man", "type": "Vengeful Spirit", "lore": "A spirit legend linked to punishment, fear, and recurring attacks associated with a hook.", "weakness": "Identify the spirit's remains or anchor object and perform the proper cleansing or destruction.", "signs": "Scratching sounds, hook marks, repeated targeting of specific victims.", "notes": "Look for the object tying the spirit to the living."}, {"name": "Jefferson Starship", "type": "Hybrid Monster", "lore": "A hunter nickname for a dangerous hybrid creature combining several monstrous traits.", "weakness": "Expect mixed abilities and avoid assuming one weakness will work.", "signs": "Conflicting evidence from multiple creature types.", "notes": "Treat every encounter as unpredictable."}, {"name": "Kitsune", "type": "Shapeshifter", "lore": "A fox spirit from Japanese folklore associated with intelligence, disguise, and supernatural abilities.", "weakness": "Lore varies widely; learn the individual spirit's nature before acting.", "signs": "Fox imagery, disguise, clever manipulation, unexplained transformations.", "notes": "Not every kitsune is hostile."}, {"name": "Lamia", "type": "Monster", "lore": "A dangerous female monster from classical lore, often linked with predation and deception.", "weakness": "Traditional protections vary by story; research local lore.", "signs": "Disappearances, seduction-based lures, conflicting eyewitness reports.", "notes": "Do not rely on appearance."}, {"name": "Leszy", "type": "Forest Spirit", "lore": "A woodland spirit of Slavic folklore tied to forests, animals, and travelers who lose their way.", "weakness": "Respect boundaries, avoid offending the forest, and use folklore-based protections.", "signs": "Circling paths, strange animal behavior, voices in the woods.", "notes": "The forest itself may be part of the threat."}, {"name": "Leviathan", "type": "Ancient Monster", "lore": "A formidable ancient creature associated with extreme durability, mimicry, and predatory intelligence.", "weakness": "Use specialized lore and containment; standard weapons may be ineffective.", "signs": "Perfect impersonation, unexplained disappearances, coordinated activity.", "notes": "Verify identities carefully."}, {"name": "Loup-Garou", "type": "Werecreature", "lore": "A French and Cajun werewolf tradition with regional variations in curse, transformation, and behavior.", "weakness": "Weaknesses depend on the tradition; silver is common but not universal.", "signs": "Animal attacks, cyclical disappearances, local curse stories.", "notes": "Always identify the regional version."}, {"name": "Lycanthrope", "type": "Werecreature", "lore": "A human affected by a wolf-like transformation or curse.", "weakness": "Silver is the traditional defense; prevention and containment matter most.", "signs": "Animalistic attacks, unusual healing, transformation patterns.", "notes": "Track cycles and triggers."}, {"name": "Mary Tudor", "type": "Historical Spirit / Legend", "lore": "A Bestiary entry for hauntings and legends associated with Queen Mary I and later folklore.", "weakness": "Approach as a spirit investigation: identify the haunting pattern and any anchor.", "signs": "Mirror legends, repeated apparitions, historically themed manifestations.", "notes": "Separate documented history from later folklore."}, {"name": "Myling", "type": "Restless Spirit", "lore": "A Scandinavian folklore spirit associated with an unburied or improperly buried child.", "weakness": "Proper burial, acknowledgment, and respectful rites are central in many traditions.", "signs": "Crying, repeated nighttime sounds, pressure or weight sensations in folklore.", "notes": "Handle the story with care and respect."}, {"name": "Phoenix", "type": "Mythic Creature", "lore": "A legendary fire-associated bird that dies and is reborn from its own remains.", "weakness": "Lore varies; ashes, fire, and rebirth are central motifs.", "signs": "Fire without clear source, cyclical appearances, rare relics.", "notes": "Destruction may not be permanent."}, {"name": "Poltergeist", "type": "Spirit Phenomenon", "lore": "A haunting characterized by physical disturbances such as moving objects, knocks, and sudden impacts.", "weakness": "Identify the source, emotional trigger, or spirit anchor and use appropriate cleansing.", "signs": "Objects moving, loud knocks, unexplained breakage.", "notes": "Document the pattern before assuming the cause."}, {"name": "Púca", "type": "Faerie / Shapeshifter", "lore": "An Irish folkloric being known for shapeshifting, mischief, warnings, and unpredictable encounters.", "weakness": "Respect local traditions and avoid bargains you do not understand.", "signs": "Animal forms, misleading directions, uncanny conversation.", "notes": "Not every encounter is malicious."}, {"name": "Rakshasa", "type": "Demonic Being", "lore": "A powerful shapeshifting being from South Asian traditions, often associated with deception and predation.", "weakness": "Weaknesses vary widely across sources; research the specific tradition.", "signs": "Disguise, illusion, impossible strength, ritual signs.", "notes": "Do not flatten different traditions into one rulebook."}, {"name": "Revenant / Ghoul", "type": "Undead", "lore": "A returning dead being or corpse-feeding monster, depending on the tradition.", "weakness": "Burial rites, fire, decapitation, or destroying the anchor appear in different traditions.", "signs": "Grave disturbances, corpse-related activity, recurring sightings of the dead.", "notes": "Identify whether it is a revenant or ghoul before choosing a method."}, {"name": "Rugaru", "type": "Monster", "lore": "A regional monster name sometimes associated with cursed or cannibalistic transformation.", "weakness": "Regional lore varies; investigate the origin of the curse.", "signs": "Changes in appetite or behavior, local legends, unexplained attacks.", "notes": "The name may refer to different creatures in different places."}, {"name": "Selkie", "type": "Shapeshifter", "lore": "A seal-being from Scottish and Irish folklore able to take human form by removing its sealskin.", "weakness": "Return of the sealskin restores freedom in many tales.", "signs": "Seal imagery, missing skins, mysterious coastal strangers.", "notes": "Treat selkie stories as folklore of captivity and freedom, not simply monsters."}, {"name": "Shapeshifter", "type": "Monster", "lore": "A being capable of assuming another person's appearance and sometimes memories or mannerisms.", "weakness": "Identity verification, observation, and specialized weapons depending on the creature.", "signs": "Duplicate sightings, inconsistent memories, impossible alibis.", "notes": "Use verification questions only the real person would know."}, {"name": "Shtriga", "type": "Witch / Monster", "lore": "A being from Albanian and Balkan folklore associated with harmful magic and predation.", "weakness": "Traditional protective rites vary by region.", "signs": "Night attacks, wasting illness in folklore, recurring curse patterns.", "notes": "Research the exact cultural tradition."}, {"name": "Siren", "type": "Mythic Being", "lore": "A creature associated with irresistible calls, songs, or psychological lures.", "weakness": "Break the lure, block the signal, and do not isolate yourself.", "signs": "Victims acting irrationally toward a voice, person, or sound.", "notes": "Use a buddy system."}, {"name": "Tulpa", "type": "Thoughtform", "lore": "A being or manifestation created or strengthened through focused belief or collective imagination.", "weakness": "Reduce reinforcement, break the belief structure, and disrupt the symbol or story sustaining it.", "signs": "Manifestations matching a shared story, belief-linked activity.", "notes": "Attention may strengthen the phenomenon."}, {"name": "Vampire", "type": "Undead / Monster", "lore": "A blood-feeding undead or transformed being appearing in many cultural traditions.", "weakness": "Sunlight, decapitation, sacred protections, and stakes appear in different traditions.", "signs": "Blood loss, nocturnal activity, unexplained bite wounds.", "notes": "Do not assume every tradition uses the same rules."}, {"name": "Vanir", "type": "Norse Deities", "lore": "A group of Norse gods associated with fertility, prosperity, nature, and magic.", "weakness": "Not a monster category; treat encounters as mythological or divine phenomena.", "signs": "Symbols tied to Freyr, Freyja, Njörðr, seiðr, fertility, and the sea.", "notes": "Approach as mythology, not a standard hunt."}, {"name": "Vetala", "type": "Spirit / Undead", "lore": "A being from South Asian folklore associated with corpses, graveyards, and possession-like behavior.", "weakness": "Traditional stories emphasize ritual knowledge and spiritual authority.", "signs": "Graveyard activity, animated corpses in folklore, riddling or deceptive speech.", "notes": "Use culturally specific sources."}, {"name": "Vodyanoy", "type": "Water Spirit", "lore": "A Slavic water spirit associated with rivers, ponds, mills, and drownings.", "weakness": "Avoid its waters, respect local offerings and boundaries, and use regional folklore.", "signs": "Unexplained drownings, mill or river disturbances, aquatic signs.", "notes": "Water is its territory."}, {"name": "Wendigo", "type": "Folkloric Being", "lore": "A being from Algonquian traditions associated with greed, excess, isolation, and cannibalism in traditional stories.", "weakness": "Treat Indigenous traditions respectfully; modern pop-culture versions vary greatly from original teachings.", "signs": "Isolation stories, winter setting, themes of insatiable hunger.", "notes": "Use Indigenous sources when researching the original tradition."}, {"name": "Woman in White", "type": "Ghost / Legend", "lore": "A widespread apparition legend involving a woman in white, often connected with grief, roads, rivers, or betrayal.", "weakness": "Identify the local legend, the spirit's history, and its anchor.", "signs": "Roadside sightings, repeating apparition, white dress, local tragedy.", "notes": "Every location has its own version."}, {"name": "Wraith", "type": "Spirit / Undead", "lore": "A dangerous apparition or death-associated spirit in folklore and fantasy traditions.", "weakness": "Protective rites, iron, salt, or destroying an anchor appear in different stories.", "signs": "Cold spots, shadowy sightings, weakening victims.", "notes": "Confirm the tradition before relying on one weakness."}];
+const grid = document.getElementById('grid');
+const search = document.getElementById('search');
+const typeFilter = document.getElementById('typeFilter');
+const favoritesOnlyBtn = document.getElementById('favoritesOnly');
+const activeFilterLabel = document.getElementById('activeFilterLabel');
+const count = document.getElementById('count');
+const empty = document.getElementById('empty');
+const dialog = document.getElementById('entryDialog');
+const favPanel = document.getElementById('favPanel');
+let alphaFilter = '';
+let favoritesOnly = false;
+let currentEntry = null;
+
+const store = {
+  getFavorites() { return JSON.parse(localStorage.getItem('mol_bestiary_favorites') || '[]'); },
+  setFavorites(v) { localStorage.setItem('mol_bestiary_favorites', JSON.stringify(v)); },
+  getNotes() { return JSON.parse(localStorage.getItem('mol_bestiary_notes') || '{}'); },
+  setNotes(v) { localStorage.setItem('mol_bestiary_notes', JSON.stringify(v)); }
+};
+
+function isFavorite(name) { return store.getFavorites().includes(name); }
+function toggleFavorite(name) {
+  let f = store.getFavorites();
+  f = f.includes(name) ? f.filter(x => x !== name) : [...f, name];
+  store.setFavorites(f);
+  render();
+  renderFavPanel();
+  if(currentEntry?.name === name) updateModalFavorite();
+}
+
+function buildAlpha() {
+  const nav = document.getElementById('alphaNav');
+  nav.innerHTML = '';
+  const all = document.createElement('button');
+  all.textContent = 'All';
+  all.style.width = '52px';
+  all.onclick = () => { alphaFilter=''; setAlphaActive(); render(); };
+  nav.appendChild(all);
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
+    const btn = document.createElement('button');
+    btn.textContent = letter;
+    btn.dataset.letter = letter;
+    btn.onclick = () => { alphaFilter = alphaFilter === letter ? '' : letter; setAlphaActive(); render(); };
+    nav.appendChild(btn);
+  });
+  setAlphaActive();
+}
+function setAlphaActive() {
+  [...document.querySelectorAll('#alphaNav button')].forEach(b => {
+    b.classList.toggle('active', alphaFilter ? b.dataset.letter === alphaFilter : b.textContent === 'All');
+  });
+}
+
+function getFiltered() {
+  const q = search.value.trim().toLowerCase();
+  const type = typeFilter.value;
+  const favs = store.getFavorites();
+  return creatures.filter(c => {
+    const matchesQ = !q || Object.values(c).some(v => String(v).toLowerCase().includes(q));
+    const matchesType = !type || c.type === type;
+    const matchesAlpha = !alphaFilter || c.name.toUpperCase().startsWith(alphaFilter);
+    const matchesFav = !favoritesOnly || favs.includes(c.name);
+    return matchesQ && matchesType && matchesAlpha && matchesFav;
+  }).sort((a,b)=>a.name.localeCompare(b.name));
+}
+
+function render() {
+  const items = getFiltered();
+  grid.innerHTML = '';
+  empty.hidden = items.length !== 0;
+  count.textContent = `${items.length} entr${items.length===1?'y':'ies'} shown`;
+  const labels = [];
+  if(search.value.trim()) labels.push(`Search: “${search.value.trim()}”`);
+  if(typeFilter.value) labels.push(typeFilter.value);
+  if(alphaFilter) labels.push(`Letter ${alphaFilter}`);
+  if(favoritesOnly) labels.push('Favorites only');
+  activeFilterLabel.textContent = labels.join(' • ');
+
+  items.forEach(c => {
+    const card = document.createElement('article');
+    card.className='card';
+    card.innerHTML = `
+      <button class="star ${isFavorite(c.name)?'on':''}" title="Favorite">${isFavorite(c.name)?'★':'☆'}</button>
+      <img class="card-image" src="${imageMap[c.name]}" alt="${c.name} illustrated Bestiary dossier" loading="lazy">
+      <h2>${c.name}</h2>
+      <div class="type">${c.type}</div>
+      <p>${c.lore}</p>`;
+    card.querySelector('.star').onclick = (e) => { e.stopPropagation(); toggleFavorite(c.name); };
+    card.onclick = () => openEntry(c);
+    grid.appendChild(card);
+  });
+}
+
+function openEntry(c) {
+  currentEntry = c;
+  entryName.textContent = c.name;
+  entryType.textContent = c.type;
+  entryLore.textContent = c.lore;
+  entryWeakness.textContent = c.weakness;
+  entrySigns.textContent = c.signs;
+  entryNotes.textContent = c.notes;
+  entryArt.src = imageMap[c.name];
+  entryArt.alt = c.name + ' illustrated Bestiary dossier';
+  personalNotes.value = store.getNotes()[c.name] || '';
+  updateModalFavorite();
+  dialog.showModal();
+}
+function updateModalFavorite() {
+  modalFavorite.textContent = isFavorite(currentEntry.name) ? '★ Favorited' : '☆ Add to Favorites';
+}
+
+function renderFavPanel() {
+  const favs = store.getFavorites();
+  favList.innerHTML = '';
+  if(!favs.length) {
+    favList.innerHTML = '<p class="muted">No favorites yet. Click a ☆ on any Bestiary entry.</p>';
+    return;
+  }
+  favs.sort().forEach(name => {
+    const c = creatures.find(x=>x.name===name);
+    if(!c) return;
+    const div=document.createElement('div');
+    div.className='fav-item';
+    div.innerHTML=`<strong>${c.name}</strong><div class="muted">${c.type}</div>`;
+    div.onclick=()=>{ favPanel.classList.remove('open'); openEntry(c); };
+    favList.appendChild(div);
+  });
+}
+
+document.getElementById('searchBtn').onclick=render;
+search.addEventListener('keydown',e=>{if(e.key==='Enter')render()});
+search.addEventListener('input',render);
+typeFilter.onchange=render;
+favoritesOnlyBtn.onclick=()=>{ favoritesOnly=!favoritesOnly; favoritesOnlyBtn.textContent=favoritesOnly?'Showing Favorites':'Show Favorites Only'; render(); };
+document.getElementById('clearFilters').onclick=()=>{
+  search.value='';typeFilter.value='';alphaFilter='';favoritesOnly=false;
+  favoritesOnlyBtn.textContent='Show Favorites Only';setAlphaActive();render();
+};
+document.getElementById('randomBtn').onclick=()=>openEntry(creatures[Math.floor(Math.random()*creatures.length)]);
+document.getElementById('favPanelBtn').onclick=()=>{renderFavPanel();favPanel.classList.add('open')};
+document.getElementById('closePanel').onclick=()=>favPanel.classList.remove('open');
+document.getElementById('closeBtn').onclick=()=>dialog.close();
+modalFavorite.onclick=()=>toggleFavorite(currentEntry.name);
+document.getElementById('saveNote').onclick=()=>{
+  const notes=store.getNotes(); notes[currentEntry.name]=personalNotes.value; store.setNotes(notes);
+  saveNote.textContent='Saved ✓'; setTimeout(()=>saveNote.textContent='Save Note',900);
+};
+document.getElementById('clearNote').onclick=()=>{
+  personalNotes.value=''; const notes=store.getNotes(); delete notes[currentEntry.name]; store.setNotes(notes);
+};
+dialog.addEventListener('click',e=>{
+  const r=dialog.getBoundingClientRect();
+  if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();
+});
+document.getElementById('expandArt').onclick=()=>{
+  viewerImage.src = entryArt.src;
+  viewerImage.alt = entryArt.alt;
+  artViewer.showModal();
+};
+document.getElementById('closeArtViewer').onclick=()=>artViewer.close();
+artViewer.addEventListener('click',e=>{
+  const r=artViewer.getBoundingClientRect();
+  if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)artViewer.close();
+});
+buildAlpha();render();renderFavPanel();
+</script>
+</body>
+</html>
